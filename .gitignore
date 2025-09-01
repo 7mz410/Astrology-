@@ -1,0 +1,24 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Secret files
+youtube_credentials.json
+youtube_token.pickle
+
+# Generated content folders
+generated_audio/
+generated_content/
+generated_images/
+generated_posts/
+generated_videos/
+
+# Log files
+*.log
+
+# Temporary media files
+*.mp4
+*.mp3
