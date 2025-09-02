@@ -1,24 +1,20 @@
+# Environment variables
+.env
+
+# Instagram session files
+instagram_session.json
+
 # Python cache
 __pycache__/
 *.pyc
 
-# Environment variables
-.env
+# Generated content by the app
+/generated_posts/
+/generated_images/
 
-# Secret files
-youtube_credentials.json
-youtube_token.pickle
+# macOS specific files
+.DS_Store
 
-# Generated content folders
-generated_audio/
-generated_content/
-generated_images/
-generated_posts/
-generated_videos/
-
-# Log files
-*.log
-
-# Temporary media files
-*.mp4
-*.mp3
+# IDE specific files
+.idea/
+.vscode/
