@@ -8,15 +8,15 @@ from pexels_api import API
 
 class InstagramService:
     """
-    A service dedicated to creating and (eventually) publishing daily astrology
-    posts for an account like 'planetsvibe'.
+    A service dedicated to creating and publishing daily astrology posts.
     """
-    def __init__(self, content_generator, image_post_generator):
+    def __init__(self, content_generator, image_post_generator, instagram_client):
         """
-        Initializes the service with dependencies.
+        Initializes the service with dependencies, including the authenticated client.
         """
         self.content_generator = content_generator
         self.image_post_generator = image_post_generator
+        self.client = instagram_client # <-- NEW: The authenticated client is now here
         
         if not PEXELS_API_KEY or "YOUR_PEXELS_API_KEY_HERE" in PEXELS_API_KEY:
             self.pexels_api = None
@@ -24,6 +24,26 @@ class InstagramService:
         else:
             self.pexels_api = API(PEXELS_API_KEY)
             print("✅ Instagram Service initialized with Pexels API.")
+
+    def publish_post(self, image_path: str, caption: str) -> bool:
+        """
+        Uploads a photo with a caption to the Instagram account.
+        """
+        if not self.client or not self.client.user_id:
+            print("❌ Error: Instagram client is not logged in or available. Cannot publish.")
+            return False
+        
+        try:
+            print(f"   - ⬆️  Attempting to upload post from path: {image_path}")
+            self.client.photo_upload(
+                path=image_path,
+                caption=caption
+            )
+            print("   - ✅ Post published successfully to Instagram!")
+            return True
+        except Exception as e:
+            print(f"   - ❌ CRITICAL: Failed to publish post to Instagram: {e}")
+            return False
 
     def _get_royalty_free_image(self, query: str) -> str | None:
         """
@@ -56,9 +76,9 @@ class InstagramService:
             print(f"   - ❌ Error fetching image from Pexels: {e}")
             return None
 
-    def create_daily_astrology_post_for_all_signs(self):
+    def create_daily_astrology_post_for_all_signs(self) -> list:
         """
-        The main automation loop. It generates a post for every zodiac sign.
+        The main automation loop. It generates a post package for every zodiac sign.
         """
         print("\n🔮 Starting Daily Astrology Post Generation for ALL SIGNS 🔮")
         zodiac_signs = [
@@ -89,13 +109,11 @@ class InstagramService:
             
             if final_post_path:
                 print(f"✅ Successfully created post package for {sign}!")
-                # --- THIS IS THE FIX ---
-                # We now save the caption along with the image path.
                 all_posts.append({
                     "sign": sign,
                     "path": final_post_path,
                     "caption": caption
                 })
         
-        print(f"\n✨ --- Process Complete! Generated {len(all_posts)} post packages. --- ✨")
+        print(f"\n✨ --- Generation Complete! Created {len(all_posts)} post packages. --- ✨")
         return all_posts

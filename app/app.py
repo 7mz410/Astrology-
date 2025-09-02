@@ -1,13 +1,9 @@
 # /app/app.py
 
-# --- الإضافة الوحيدة والمهمة هنا ---
-# يجب أن تكون هذه الأسطر في بداية الملف تماماً
-from dotenv import load_dotenv
-load_dotenv()
-# --- نهاية الإضافة ---
+import os
+# The .env loading is now handled inside config.py, so we don't need it here.
 
 import sys
-import os
 import streamlit as st
 import time
 from datetime import time as dt_time
@@ -19,7 +15,6 @@ st.set_page_config(page_title="Planets Vibe Bot", page_icon="🔮", layout="cent
 
 @st.cache_resource
 def get_orchestrator():
-    # الآن، عندما يتم استدعاء هذا، سيكون config.py قد قرأ الأسرار من البيئة بالفعل
     return MainOrchestrator()
 orchestrator = get_orchestrator()
 
@@ -82,12 +77,13 @@ if insta_status.get("is_logged_in"):
             st.warning("Automation stopped.")
 
     st.subheader("Manual Generation")
+    # --- MODIFIED: Changed the function name called by the button ---
     if st.button("🔮 Generate & Post Today's 12 Posts Now", use_container_width=True, type="primary"):
-        with st.spinner("Generating 12 astrology posts..."):
-            posts = orchestrator.generate_all_astrology_posts()
+        with st.spinner("Generating & Publishing 12 astrology posts... This will take several minutes."):
+            posts = orchestrator.generate_and_publish_all_astrology_posts() # <-- The change is here
         
         if posts and len(posts) > 0:
-            st.success(f"Successfully generated {len(posts)} posts!")
+            st.success(f"Successfully published {len(posts)} posts to Instagram!")
             st.balloons()
         else:
-            st.error("Process failed. Check terminal for details.")
+            st.error("Process failed. Check the terminal for details.")
